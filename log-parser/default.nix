@@ -7,7 +7,6 @@ pkgs.stdenv.mkDerivation {
   buildInputs = with pkgs; [
     python3
     python35Packages.flake8
-    makeWrapper
   ];
 
   shellHook =''
