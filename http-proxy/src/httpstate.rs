@@ -17,19 +17,19 @@ pub struct HttpResponse {
     headers: Vec<Header>,
 }
 
-pub struct HttpRequestParser {
-    stream: HttpReader,
+pub struct HttpRequestParser<'a> {
+    stream: HttpReader<'a>,
 }
 
-pub struct HttpResponseParser {
-    stream: HttpReader,
+pub struct HttpResponseParser<'a> {
+    stream: HttpReader<'a>,
 }
 
 pub struct HeaderParser {
 }
 
-pub struct HttpReader {
-    stream: BufReader<TcpStream>,
+pub struct HttpReader<'a> {
+    stream: &'a mut BufReader<TcpStream>,
 }
 
 impl Header {
@@ -141,13 +141,13 @@ impl HttpRequestParser {
         return HeaderParser::read_headers(&mut self.stream);
     }
 
-    pub fn stream(self) -> BufReader<TcpStream> {
+    pub fn stream(self) -> &'a BufReader<TcpStream> {
         return self.stream.stream();
     }
 }
 
-impl HttpResponseParser {
-    pub fn new(stream: BufReader<TcpStream>) -> HttpResponseParser {
+impl<'a> HttpResponseParser<'a> {
+    pub fn new(stream: &'a mut BufReader<TcpStream>) -> HttpResponseParser<'a> {
         return HttpResponseParser { stream: HttpReader::new(stream) };
     }
 
@@ -185,7 +185,7 @@ impl HttpResponseParser {
         return HeaderParser::read_headers(&mut self.stream);
     }
 
-    pub fn stream(self) -> BufReader<TcpStream> {
+    pub fn stream(self) -> &'a BufReader<TcpStream> {
         return self.stream.stream();
     }
 }
@@ -214,8 +214,8 @@ impl HeaderParser {
     }
 }
 
-impl HttpReader {
-    pub fn new(stream: BufReader<TcpStream>) -> HttpReader {
+impl<'a> HttpReader<'a> {
+    pub fn new(stream: &'a mut BufReader<TcpStream>) -> HttpReader<'a> {
         return HttpReader { stream: stream };
     }
 
@@ -229,7 +229,7 @@ impl HttpReader {
         };
     }
 
-    fn stream(self) -> BufReader<TcpStream> {
+    fn stream(self) -> &'a BufReader<TcpStream> {
         return self.stream;
     }
 }

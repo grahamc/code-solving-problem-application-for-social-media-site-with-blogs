@@ -15,20 +15,12 @@ mod httperrors;
 mod httplineparser;
 mod httpstate;
 
-fn do_proxy(client_stream: BufReader<TcpStream>,
-            backend: &'static str)
-            -> Result<(HttpResponse, BufReader<TcpStream>, BufReader<TcpStream>),
-                      (HttpError, BufReader<TcpStream>)> {
-    let mut req_parser = HttpRequestParser::new(client_stream);
-    let mut parsed_request: HttpRequest;
-    match req_parser.parse() {
-        Ok(request) => {
-            parsed_request = request;
-        }
-        Err(e) => return Err((e, req_parser.stream())),
-    }
 
-    let mut client_stream = req_parser.stream();
+fn do_proxy<'a>(client_stream: &mut BufReader<TcpStream>,
+                backend: &'a str)
+                -> Result<(HttpResponse, BufReader<TcpStream>), HttpError> {
+
+    let mut parsed_request = try!(HttpRequestParser::new(&mut client_stream).parse());
 
     let client_ip = client_stream.get_ref().peer_addr().unwrap();
     let forwarded_for = Header::from_string(format!("X-Forwarded-For: {}\r\n", client_ip));
@@ -40,12 +32,12 @@ fn do_proxy(client_stream: BufReader<TcpStream>,
             server_stream = connection;
         }
         Err(e) => {
-            return Err((HttpError::gateway_timeout(e), client_stream));
+            return Err(HttpError::gateway_timeout(e));
         }
     }
 
     if let Err(e) = server_stream.write(&parsed_request.as_string().as_bytes()) {
-        return Err((HttpError::gateway_timeout(e), client_stream));
+        return Err(HttpError::gateway_timeout(e));
     }
 
     let mut remaining = parsed_request.body_length();
@@ -56,37 +48,29 @@ fn do_proxy(client_stream: BufReader<TcpStream>,
                 remaining -= n;
             }
             Err(e) => {
-                return Err((HttpError::client_timeout(e), client_stream));
+                return Err(HttpError::client_timeout(e));
             }
         }
 
         if let Err(e) = server_stream.write(&buf) {
-            return Err((HttpError::gateway_timeout(e), client_stream));
+            return Err(HttpError::gateway_timeout(e));
         }
     }
 
-    let server_stream = BufReader::new(server_stream);
-    let mut resp_parser = HttpResponseParser::new(server_stream);
-
-    let mut response: HttpResponse;
-
-    match resp_parser.parse() {
-        Ok(resp) => response = resp,
-        Err(e) => {
-            return Err((e, client_stream));
-        }
-    }
+    let mut server_stream = BufReader::new(server_stream);
+    let mut response = try!(HttpResponseParser::new(&mut server_stream).parse());
 
     let backend = Header::from_string(format!("X-Backend: {}\r\n", &backend));
     response.add_header(backend.unwrap());
 
-    return Ok((response, client_stream, resp_parser.stream()));
+    return Ok((response, server_stream));
 }
 
 fn return_error_to_client(mut client_stream: BufReader<TcpStream>, error: HttpError) {
     let response = HttpResponse::from_error(error);
 
     let client_stream = client_stream.get_mut();
+
     if let Err(e) = client_stream.write(&response.as_string().as_bytes()) {
         println!("Encountered error returning an error to the client: {}", e);
     }
@@ -143,12 +127,12 @@ fn main() {
 
                             println!("{} connected", ident);
 
-                            let client_stream = BufReader::new(client_stream);
-                            match do_proxy(client_stream, backend) {
-                                Err((err, client_stream)) => {
+                            let mut client_stream = BufReader::new(client_stream);
+                            match do_proxy(&mut client_stream, backend) {
+                                Err(err) => {
                                     return_error_to_client(client_stream, err);
                                 }
-                                Ok((response, client_stream, server_stream)) => {
+                                Ok((response, server_stream)) => {
                                     stream_response_to_client(client_stream,
                                                               server_stream,
                                                               response);
