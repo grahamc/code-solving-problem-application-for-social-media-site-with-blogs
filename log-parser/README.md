@@ -34,8 +34,8 @@ but again the perfomrance was about on par with the regex option.
 
 ## Multiprocessing
 I gave it a go with multiprocessing and forking of workers to parse
-individual jobs. At 10 files, it took a very long time to serialize
-and return the data from the workers.
+individual jobs. At 10 ~500mb files, it took a very long time to
+serialize and return the data from the workers.
 
 For the code sample, I decided to leave out multiprocessing and leave
 it as a conversation.
