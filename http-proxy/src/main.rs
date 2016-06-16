@@ -44,11 +44,8 @@ fn do_proxy(client_stream: BufReader<TcpStream>,
         }
     }
 
-    match server_stream.write(&parsed_request.as_string().as_bytes()) {
-        Ok(_) => {}
-        Err(e) => {
-            return Err((HttpError::gateway_timeout(e), client_stream));
-        }
+    if let Err(e) = server_stream.write(&parsed_request.as_string().as_bytes()) {
+        return Err((HttpError::gateway_timeout(e), client_stream));
     }
 
     let mut remaining = parsed_request.body_length();
@@ -63,11 +60,8 @@ fn do_proxy(client_stream: BufReader<TcpStream>,
             }
         }
 
-        match server_stream.write(&buf) {
-            Ok(_) => {}
-            Err(e) => {
-                return Err((HttpError::gateway_timeout(e), client_stream));
-            }
+        if let Err(e) = server_stream.write(&buf) {
+            return Err((HttpError::gateway_timeout(e), client_stream));
         }
     }
 
@@ -93,14 +87,19 @@ fn return_error_to_client(mut client_stream: BufReader<TcpStream>, error: HttpEr
     let response = HttpResponse::from_error(error);
 
     let client_stream = client_stream.get_mut();
-    client_stream.write(&response.as_string().as_bytes());
+    if let Err(e) = client_stream.write(&response.as_string().as_bytes()) {
+        println!("Encountered error returning an error to the client: {}", e);
+    }
 }
 
 fn stream_response_to_client(mut client_stream: BufReader<TcpStream>,
                              mut server_stream: BufReader<TcpStream>,
                              response: HttpResponse) {
     let client_stream = client_stream.get_mut();
-    client_stream.write(&response.as_string().as_bytes());
+    if let Err(e) = client_stream.write(&response.as_string().as_bytes()) {
+        println!("Encountered error sending headers to the client: {}", e);
+    }
+
     let mut remaining = response.body_length();
     while remaining > 0 {
         let mut buf = [0; 4096];
@@ -112,9 +111,12 @@ fn stream_response_to_client(mut client_stream: BufReader<TcpStream>,
                 break;
             }
         }
-        client_stream.write(&buf);
+        if let Err(_) = client_stream.write(&buf) {
+            break;
+        }
     }
 }
+
 fn main() {
     let threads_per_backend = 1;
 
@@ -139,7 +141,7 @@ fn main() {
                             let client_ident = client_stream.peer_addr().unwrap();
                             let ident = format!("{} <--> {}", client_ident, backend_ident);
 
-                            // println!("{} connected", ident);
+                            println!("{} connected", ident);
 
                             let client_stream = BufReader::new(client_stream);
                             match do_proxy(client_stream, backend) {
