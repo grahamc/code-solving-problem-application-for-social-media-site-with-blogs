@@ -103,8 +103,8 @@ impl HttpResponse {
     }
 }
 
-impl HttpRequestParser {
-    pub fn new(stream: BufReader<TcpStream>) -> HttpRequestParser {
+impl<'a> HttpRequestParser<'a> {
+    pub fn new(stream: &'a mut BufReader<TcpStream>) -> HttpRequestParser<'a> {
         HttpRequestParser { stream: HttpReader::new(stream) }
     }
 

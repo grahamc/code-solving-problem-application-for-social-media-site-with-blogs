@@ -20,7 +20,7 @@ fn do_proxy<'a>(client_stream: &mut BufReader<TcpStream>,
                 backend: &'a str)
                 -> Result<(HttpResponse, BufReader<TcpStream>), HttpError> {
 
-    let mut parsed_request = try!(HttpRequestParser::new(&mut client_stream).parse());
+    let mut parsed_request = try!(HttpRequestParser::new(client_stream).parse());
 
     let client_ip = client_stream.get_ref().peer_addr().unwrap();
     let forwarded_for = Header::from_string(format!("X-Forwarded-For: {}\r\n", client_ip));
