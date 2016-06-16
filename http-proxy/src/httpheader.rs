@@ -1,6 +1,6 @@
 
 use httplineparser::HttpLineParsers;
-use httpstate::HttpReader;
+use httpreader::HttpReader;
 
 pub struct Header(pub String);
 

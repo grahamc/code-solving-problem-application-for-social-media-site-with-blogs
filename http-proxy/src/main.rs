@@ -15,9 +15,9 @@ use proxy::do_proxy;
 mod httprequest;
 mod httpresponse;
 mod httpheader;
+mod httpreader;
 mod httperrors;
 mod httplineparser;
-mod httpstate;
 mod proxy;
 
 

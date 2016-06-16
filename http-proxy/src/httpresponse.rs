@@ -4,7 +4,7 @@
 use std::net::TcpStream;
 use std::io::BufReader;
 use std::io::BufRead;
-use httpstate::HttpReader;
+use httpreader::HttpReader;
 use httpheader::{Header, HeaderParser};
 use httplineparser::HttpLineParsers;
 use httperrors::HttpError;
