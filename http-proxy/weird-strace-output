@@ -1,0 +1,54 @@
+Listening on 127.0.0.1:8000
+strace: Process 5964 attached
+strace: Process 5965 attached
+strace: Process 5966 attached
+strace: Process 5967 attached
+Backend 127.0.0.1:8002#0 listening
+Backend 127.0.0.1:8003#0 listening
+Backend 127.0.0.1:8004#0 listening
+Backend 127.0.0.1:8001#0 listening
+^Cstrace: Process 5963 detached
+strace: Process 5964 detached
+strace: Process 5965 detached
+strace: Process 5966 detached
+strace: Process 5967 detached
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+ -0.58    0.119950        2399        50        43 open
+ -0.44    0.091162        2399        38           mmap
+ -0.27    0.055177        2399        23        18 stat
+ -0.16    0.033586        2399        14           mprotect
+ -0.14    0.028794        2400        12           munmap
+ -0.12    0.023990        2399        10           sigaltstack
+ -0.07    0.014394        2399         6           fstat
+ -0.06    0.012001        2400         5           sched_getaffinity
+ -0.06    0.011995        2399         5           write
+ -0.06    0.011995        2399         5           rt_sigaction
+ -0.06    0.011995        2399         5           set_robust_list
+ -0.05    0.009596        2399         4           clone
+ -0.05    0.009596        2399         4           fcntl
+ -0.02    0.004798        2399         2           brk
+ -0.02    0.004798        2399         2           getrlimit
+ -0.01    0.002399        2399         1           rt_sigprocmask
+ -0.01    0.002399        2399         1         1 access
+ -0.01    0.002399        2399         1           bind
+ -0.01    0.002399        2399         1           listen
+ -0.01    0.002399        2399         1           getsockname
+ -0.01    0.002399        2399         1           setsockopt
+ -0.01    0.002399        2399         1           execve
+ -0.01    0.002399        2399         1         1 readlink
+ -0.01    0.002399        2399         1           arch_prctl
+ -0.01    0.002399        2399         1           set_tid_address
+ -0.01    0.002995         599         5           getrandom
+ -0.01    0.001176          31        38         6 futex
+ 11.17   -2.313457 18446744073709551039      4000      4000 connect
+ 11.30   -2.340740 18446744073709551032      4000           sendto
+ 11.31   -2.343961 18446744073709551032      4010           read
+ 11.40   -2.361956 18446744073709551027      4005           ioctl
+ 11.42   -2.364933 18446744073709551026      4000           getpeername
+ 11.43   -2.367950 18446744073709551025      4000           accept4
+ 11.45   -2.371538 18446744073709551024      4001           socket
+ 22.81   -4.725005 18446744073709551027      8007           close
+------ ----------- ----------- --------- --------- ----------------
+100.00  -20.717552                 36261      4069 total
+

@@ -2,7 +2,9 @@
 
 use std::io::{BufReader, Read, Write};
 use std::net::TcpStream;
-use httpstate::{Header, HttpRequestParser, HttpResponseParser};
+use httpresponse::HttpResponseParser;
+use httprequest::HttpRequestParser;
+use httpheader::Header;
 use httperrors::HttpError;
 
 
