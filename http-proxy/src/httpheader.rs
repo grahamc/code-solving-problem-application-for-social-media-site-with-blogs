@@ -15,6 +15,10 @@ impl Header {
             return None;
         }
     }
+
+    pub fn from_str(header: &'static str) -> Option<Header> {
+        return Header::from_string(String::from(header));
+    }
 }
 
 impl HeaderParser {
@@ -69,10 +73,45 @@ pub fn prefix_and_headers_to_io_string(prefix: &String, headers: &Vec<Header>) -
     return req;
 }
 
-
 #[test]
 fn test_header_from_string() {
     let val = String::from("Valid: Header\r\n");
     let header = Header::from_string(val);
     assert!(header.is_some());
+}
+
+#[test]
+pub fn test_headers_to_body_len_explicit() {
+    let headers = vec![
+        Header::from_str("Foo: bar\r\n").unwrap(),
+        Header::from_str("Content-Length: 17\r\n").unwrap()
+    ];
+
+    assert_eq!(headers_to_body_len(&headers), 17);
+
+}
+
+
+#[test]
+pub fn test_headers_to_body_len_implicit() {
+    let headers = vec![
+        Header::from_str("Foo: bar\r\n").unwrap(),
+    ];
+
+    assert_eq!(headers_to_body_len(&headers), 0);
+
+}
+
+
+#[test]
+fn test_prefix_and_headers_to_io_string() {
+    let prefix = String::from("HTTP/1.0 200 Ok\r\n");
+    let headers = vec![
+        Header::from_str("Foo: bar\r\n").unwrap(),
+        Header::from_str("Baz: tux\r\n").unwrap()
+    ];
+
+    let iostr = prefix_and_headers_to_io_string(&prefix, &headers);
+
+    assert_eq!(iostr, String::from("HTTP/1.0 200 Ok\r\nFoo: bar\r\nBaz: tux\r\n\r\n"));
 }

@@ -126,3 +126,19 @@ fn test_http_line_verifier_header_line_tspecial_cant_be_keys() {
                HttpLineParsers::verify_header_line("[]{}: notvalid\r\n"));
 
 }
+
+#[test]
+fn test_end_of_headers() {
+    assert!(HttpLineParsers::verify_end_of_headers("\n"));
+    assert!(HttpLineParsers::verify_end_of_headers("\r\n"));
+    assert!(!HttpLineParsers::verify_end_of_headers("fo\r\n"));
+}
+
+#[test]
+fn test_extract_content_length() {
+    assert!(HttpLineParsers::extract_content_length("Foo: Bar").is_none());
+    assert_eq!(
+        HttpLineParsers::extract_content_length("Content-Length: 45\n").expect("45"),
+        45
+    )
+}
