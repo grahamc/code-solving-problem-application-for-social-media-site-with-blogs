@@ -15,6 +15,12 @@ mod httperrors;
 mod httplineparser;
 mod httpstate;
 
+fn backend_connect<'a>(backend: &'a str) -> Result<TcpStream,HttpError> {
+    match TcpStream::connect(backend) {
+        Ok(connection) => { Ok(connection) }
+        Err(e) => { Err(HttpError::gateway_timeout(e)) }
+    }
+}
 
 fn do_proxy<'a>(client_stream: &mut BufReader<TcpStream>,
                 backend: &'a str)
@@ -26,15 +32,7 @@ fn do_proxy<'a>(client_stream: &mut BufReader<TcpStream>,
     let forwarded_for = Header::from_string(format!("X-Forwarded-For: {}\r\n", client_ip));
     parsed_request.add_header(forwarded_for.unwrap());
 
-    let mut server_stream: TcpStream;
-    match TcpStream::connect(backend) {
-        Ok(connection) => {
-            server_stream = connection;
-        }
-        Err(e) => {
-            return Err(HttpError::gateway_timeout(e));
-        }
-    }
+    let mut server_stream = try!(backend_connect(backend));
 
     if let Err(e) = server_stream.write(&parsed_request.as_string().as_bytes()) {
         return Err(HttpError::gateway_timeout(e));

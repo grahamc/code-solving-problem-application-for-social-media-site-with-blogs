@@ -29,6 +29,7 @@ pub struct HeaderParser {
 }
 
 pub struct HttpReader<'a> {
+    // <Read> (trait) says read(&self) so mutable borrow
     stream: &'a mut BufReader<TcpStream>,
 }
 
@@ -140,10 +141,6 @@ impl<'a> HttpRequestParser<'a> {
     fn read_headers(&mut self) -> Result<Vec<Header>, &'static str> {
         return HeaderParser::read_headers(&mut self.stream);
     }
-
-    pub fn stream(self) -> &'a BufReader<TcpStream> {
-        return self.stream.stream();
-    }
 }
 
 impl<'a> HttpResponseParser<'a> {
@@ -183,10 +180,6 @@ impl<'a> HttpResponseParser<'a> {
 
     pub fn read_headers(&mut self) -> Result<Vec<Header>, &'static str> {
         return HeaderParser::read_headers(&mut self.stream);
-    }
-
-    pub fn stream(self) -> &'a BufReader<TcpStream> {
-        return self.stream.stream();
     }
 }
 
@@ -229,7 +222,4 @@ impl<'a> HttpReader<'a> {
         };
     }
 
-    fn stream(self) -> &'a BufReader<TcpStream> {
-        return self.stream;
-    }
 }
