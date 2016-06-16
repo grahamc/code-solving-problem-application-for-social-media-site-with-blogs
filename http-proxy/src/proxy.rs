@@ -7,8 +7,8 @@ use httperrors::HttpError;
 
 
 pub fn do_proxy<'a>(client_stream: &mut BufReader<TcpStream>,
-                backend: &'a str)
-                -> Result<(), HttpError> {
+                    backend: &'a str)
+                    -> Result<(), HttpError> {
 
     let mut parsed_request = try!(HttpRequestParser::new(client_stream).parse());
 
@@ -46,10 +46,10 @@ pub fn do_proxy<'a>(client_stream: &mut BufReader<TcpStream>,
 }
 
 
-fn backend_connect<'a>(backend: &'a str) -> Result<TcpStream,HttpError> {
+fn backend_connect<'a>(backend: &'a str) -> Result<TcpStream, HttpError> {
     match TcpStream::connect(backend) {
-        Ok(connection) => { Ok(connection) }
-        Err(e) => { Err(HttpError::gateway_timeout(e)) }
+        Ok(connection) => Ok(connection),
+        Err(e) => Err(HttpError::gateway_timeout(e)),
     }
 }
 
@@ -91,9 +91,7 @@ fn xfer_server_body_to_client<'a>(length: usize,
             Ok(n) => {
                 remaining += n;
             }
-            Err(e) => {
-                return Err(HttpError::gateway_timeout(e))
-            }
+            Err(e) => return Err(HttpError::gateway_timeout(e)),
         }
         if let Err(e) = client.write(&buf) {
             return Err(HttpError::client_timeout(e));

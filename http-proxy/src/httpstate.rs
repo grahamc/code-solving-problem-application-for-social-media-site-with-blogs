@@ -221,5 +221,4 @@ impl<'a> HttpReader<'a> {
             Err(_) => Err("Failed read"),
         };
     }
-
 }

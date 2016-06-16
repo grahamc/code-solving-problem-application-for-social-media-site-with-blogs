@@ -7,8 +7,7 @@ use std::net::{TcpListener, TcpStream};
 use std::thread;
 use std::io::{BufReader, Write};
 // use std::str;
-pub use httpstate::{Header, HttpResponse, HttpRequestParser, HttpResponseParser,
-                    HttpReader};
+pub use httpstate::{Header, HttpResponse, HttpRequestParser, HttpResponseParser, HttpReader};
 pub use httperrors::HttpError;
 pub use proxy::do_proxy;
 mod httperrors;
