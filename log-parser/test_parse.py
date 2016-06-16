@@ -10,22 +10,23 @@ class TestCodesByDateTimeCounter(unittest.TestCase):
             (('15/Jun/2016:18:12', '200'), '127.0.0.1 - - [15/Jun/2016:18:12:04 -0400] "GET /server-status?auto HTTP/1.1" 200 517 "-" "Linode Longview 1.1.4 client: 77D66E2B-F813-5205-EC7357DF2EA499AC"'),  # noqa
             (('15/Jun/2016:18:36', '404'), '62.138.2.243 - - [15/Jun/2016:18:36:28 -0400] "GET /robots.txt HTTP/1.0" 404 372 "-" "Mozilla/5.0 (compatible; MJ12bot/v1.4.5; http://www.majestic12.co.uk/bot.php?+)"'),  # noqa
             (('10/Oct/2000:13:55', '200'), '127.0.0.1 - frank [10/Oct/2000:13:55:36 -0700] "GET /apache_pb.gif HTTP/1.0" 200 2326 "http://www.example.com/start.html" "Mozilla/4.08 [en] (Win98; I ;Nav)"'),  # noqa
+            (('23/Aug/2010:03:50', '200'), '123.65.150.10 - - [23/Aug/2010:03:50:59 +0000] "POST /wordpress3/wp-admin/admin-ajax.php HTTP/1.1" 200 2 "http://www.example.com/wordpress3/wp-admin/post-new.php" "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_4; en-US) AppleWebKit/534.3 (KHTML, like Gecko) Chrome/6.0.472.25 Safari/534.3"'),  # noqa
         ]
 
     def test_parse_regex(self):
         counter = parse.CodesByDateTimeCounter()
 
         for ((date, code), line) in self.parse_lines():
-            self.assertEquals((date, code), counter.parse_line_regex(line))
+            self.assertEqual((date, code), counter.parse_line_regex(line))
 
     def test_parse_scan(self):
         counter = parse.CodesByDateTimeCounter()
 
         for ((date, code), line) in self.parse_lines():
-            self.assertEquals((date, code), counter.parse_line_scan(line))
+            self.assertEqual((date, code), counter.parse_line_scan(line))
 
     def test_parse_split(self):
         counter = parse.CodesByDateTimeCounter()
 
         for ((date, code), line) in self.parse_lines():
-            self.assertEquals((date, code), counter.parse_line_split(line))
+            self.assertEqual((date, code), counter.parse_line_split(line))
