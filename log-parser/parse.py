@@ -40,7 +40,7 @@ class CodesByDateTimeCounter:
         return line[datestart:minuteend], line[(rqlineend + 1):(rqlineend + 4)]
 
     def parse_line_split(self, line):
-        _, dateend = line.split('[', 2)
+        _, dateend = line.split('[', 1)
         datestart, requestline, codes, _ = dateend.split('"', 3)
         _, status, _ = codes.split(' ', 2)
 
