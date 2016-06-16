@@ -17,6 +17,7 @@ pub fn do_proxy<'a>(client_stream: &mut BufReader<TcpStream>,
     parsed_request.add_header(forwarded_for.unwrap());
 
     let mut server_stream = try!(backend_connect(backend));
+    println!("{} <--> {}: connected", client_ip, backend);
     if let Err(e) = server_stream.write(&parsed_request.as_string().as_bytes()) {
         return Err(HttpError::gateway_timeout(e));
     }

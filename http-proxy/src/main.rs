@@ -48,14 +48,11 @@ fn main() {
                 for client_stream in listener.incoming() {
                     match client_stream {
                         Ok(client_stream) => {
-                            let client_ident = client_stream.peer_addr().unwrap();
-                            let ident = format!("{} <--> {}", client_ident, backend_ident);
-
-                            println!("{} connected", ident);
-
                             let mut client_stream = BufReader::new(client_stream);
                             match do_proxy(&mut client_stream, backend) {
                                 Err(err) => {
+                                    let client_ip = client_stream.get_ref().peer_addr().unwrap();
+                                    println!("{} <--> {} encountered an error: {}", client_ip, backend, err);
                                     return_error_to_client(client_stream, err);
                                 }
                                 Ok(_) => {}
