@@ -4,7 +4,7 @@ use std::fmt;
 
 pub struct HttpError {
     pub code: i32,
-    pub message: String
+    pub message: String,
 }
 
 impl fmt::Display for HttpError {

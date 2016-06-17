@@ -4,7 +4,7 @@ use std::net::TcpStream;
 use httperrors::HttpError;
 use httpreader::HttpReader;
 use httplineparser::HttpLineParsers;
-use httpheader::{Header,HeaderParser,headers_to_body_len, prefix_and_headers_to_io_string};
+use httpheader::{Header, HeaderParser, headers_to_body_len, prefix_and_headers_to_io_string};
 
 pub struct HttpRequest {
     request_line: String,

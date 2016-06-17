@@ -82,10 +82,8 @@ fn test_header_from_string() {
 
 #[test]
 pub fn test_headers_to_body_len_explicit() {
-    let headers = vec![
-        Header::from_str("Foo: bar\r\n").unwrap(),
-        Header::from_str("Content-Length: 17\r\n").unwrap()
-    ];
+    let headers = vec![Header::from_str("Foo: bar\r\n").unwrap(),
+                       Header::from_str("Content-Length: 17\r\n").unwrap()];
 
     assert_eq!(headers_to_body_len(&headers), 17);
 
@@ -106,12 +104,11 @@ pub fn test_headers_to_body_len_implicit() {
 #[test]
 fn test_prefix_and_headers_to_io_string() {
     let prefix = String::from("HTTP/1.0 200 Ok\r\n");
-    let headers = vec![
-        Header::from_str("Foo: bar\r\n").unwrap(),
-        Header::from_str("Baz: tux\r\n").unwrap()
-    ];
+    let headers = vec![Header::from_str("Foo: bar\r\n").unwrap(),
+                       Header::from_str("Baz: tux\r\n").unwrap()];
 
     let iostr = prefix_and_headers_to_io_string(&prefix, &headers);
 
-    assert_eq!(iostr, String::from("HTTP/1.0 200 Ok\r\nFoo: bar\r\nBaz: tux\r\n\r\n"));
+    assert_eq!(iostr,
+               String::from("HTTP/1.0 200 Ok\r\nFoo: bar\r\nBaz: tux\r\n\r\n"));
 }

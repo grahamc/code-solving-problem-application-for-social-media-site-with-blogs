@@ -137,8 +137,6 @@ fn test_end_of_headers() {
 #[test]
 fn test_extract_content_length() {
     assert!(HttpLineParsers::extract_content_length("Foo: Bar").is_none());
-    assert_eq!(
-        HttpLineParsers::extract_content_length("Content-Length: 45\n").expect("45"),
-        45
-    )
+    assert_eq!(HttpLineParsers::extract_content_length("Content-Length: 45\n").expect("45"),
+               45)
 }

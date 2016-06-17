@@ -57,7 +57,10 @@ fn main() {
                             match do_proxy(&mut client_stream, backend) {
                                 Err(err) => {
                                     let client_ip = client_stream.get_ref().peer_addr().unwrap();
-                                    println!("{} <--> {} encountered an error: {}", client_ip, backend, err);
+                                    println!("{} <--> {} encountered an error: {}",
+                                             client_ip,
+                                             backend,
+                                             err);
                                     return_error_to_client(client_stream, err);
                                 }
                                 Ok(_) => {}
